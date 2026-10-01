@@ -65,6 +65,7 @@
     <string name="server_status_error">Error: %1$s</string>
     <string name="server_action_start">Start</string>
     <string name="server_action_stop">Stop</string>
+    <string name="server_stop_shortcut">Stop server</string>
 
     <!-- Configuration -->
     <string name="configuration_title">Configuration</string>
