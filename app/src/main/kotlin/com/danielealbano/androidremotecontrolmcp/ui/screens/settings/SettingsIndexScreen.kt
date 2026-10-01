@@ -4,8 +4,11 @@ package com.danielealbano.androidremotecontrolmcp.ui.screens.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -28,8 +31,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.danielealbano.androidremotecontrolmcp.R
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassCard
 import com.danielealbano.androidremotecontrolmcp.ui.navigation.SettingsRoute
+
+private const val ENTRIES_OUTER_PADDING_DP = 16
+private const val ENTRIES_VERTICAL_PADDING_DP = 6
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,13 +50,21 @@ fun SettingsIndexScreen(
             title = { Text(stringResource(R.string.tab_settings)) },
             windowInsets = WindowInsets(0),
         )
-        SettingsEntriesColumn(
-            onNavigate = onNavigate,
+        // All entries sit in one glass group; the list items themselves stay transparent.
+        Column(
             modifier =
                 Modifier
                     .weight(1f)
-                    .verticalScroll(rememberScrollState()),
-        )
+                    .verticalScroll(rememberScrollState())
+                    .padding(ENTRIES_OUTER_PADDING_DP.dp),
+        ) {
+            GlassCard(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(vertical = ENTRIES_VERTICAL_PADDING_DP.dp),
+            ) {
+                SettingsEntriesColumn(onNavigate = onNavigate)
+            }
+        }
     }
 }
 

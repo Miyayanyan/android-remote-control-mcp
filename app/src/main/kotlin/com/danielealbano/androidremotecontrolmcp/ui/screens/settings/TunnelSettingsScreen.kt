@@ -4,6 +4,7 @@ package com.danielealbano.androidremotecontrolmcp.ui.screens.settings
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -23,7 +24,6 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +54,7 @@ import com.danielealbano.androidremotecontrolmcp.data.model.CloudflareTunnelMode
 import com.danielealbano.androidremotecontrolmcp.data.model.ServerStatus
 import com.danielealbano.androidremotecontrolmcp.data.model.TunnelProviderType
 import com.danielealbano.androidremotecontrolmcp.data.model.TunnelStatus
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassCard
 import com.danielealbano.androidremotecontrolmcp.ui.viewmodels.MainViewModel
 
 private const val STATUS_INDICATOR_SIZE_DP = 16
@@ -98,17 +99,17 @@ fun TunnelSettingsScreen(
                     .padding(16.dp),
         ) {
             if (serverConfig.httpsEnabled) {
-                ElevatedCard(
+                GlassCard(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
+                            .padding(bottom = 16.dp)
+                            .fillMaxWidth(),
+                    contentPadding = PaddingValues(16.dp),
                 ) {
                     Text(
                         text = stringResource(R.string.remote_access_https_disabled_warning),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp),
                     )
                 }
             }

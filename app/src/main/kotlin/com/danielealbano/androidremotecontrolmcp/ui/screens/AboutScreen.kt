@@ -263,6 +263,12 @@ fun AboutScreen(
                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_MODEL_URL)))
                     },
             )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.about_attribution_glass_design),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
 
             Spacer(Modifier.height(24.dp))
 

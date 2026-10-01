@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.danielealbano.androidremotecontrolmcp.R
 import com.danielealbano.androidremotecontrolmcp.data.model.ServerLogEntry
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassCard
 import com.danielealbano.androidremotecontrolmcp.ui.theme.AndroidRemoteControlMcpTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -38,12 +38,8 @@ fun ServerLogsSection(
     onShowMore: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-        ) {
+    GlassCard(modifier = modifier.fillMaxWidth()) {
+        Column {
             Text(
                 text = stringResource(R.string.server_logs_title),
                 style = MaterialTheme.typography.titleLarge,

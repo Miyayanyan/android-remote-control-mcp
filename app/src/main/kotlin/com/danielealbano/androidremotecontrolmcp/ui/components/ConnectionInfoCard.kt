@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +44,7 @@ import com.danielealbano.androidremotecontrolmcp.data.model.ServerStatus
 import com.danielealbano.androidremotecontrolmcp.data.model.TunnelEndpoint
 import com.danielealbano.androidremotecontrolmcp.data.model.TunnelProviderType
 import com.danielealbano.androidremotecontrolmcp.data.model.TunnelStatus
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassCard
 import com.danielealbano.androidremotecontrolmcp.ui.theme.AndroidRemoteControlMcpTheme
 import com.danielealbano.androidremotecontrolmcp.ui.theme.WarningAmber
 
@@ -168,12 +168,8 @@ fun ConnectionInfoCard(
             }
         }
 
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-        ) {
+    GlassCard(modifier = modifier.fillMaxWidth()) {
+        Column {
             Text(
                 text = stringResource(R.string.connection_info_title),
                 style = MaterialTheme.typography.titleLarge,

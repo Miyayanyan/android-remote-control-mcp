@@ -51,6 +51,7 @@
     <string name="about_attributions_section">Attributions</string>
     <string name="about_attribution_dbip">IP geolocation data by DB-IP (db-ip.com), licensed under CC BY 4.0.</string>
     <string name="about_attribution_privacy_model">Privacy Mode PII detection model by Ai4Privacy (MIT license). Built with Llama.</string>
+    <string name="about_attribution_glass_design">Liquid-glass visual style adapted from the \"iOS 26 Liquid Glass Simulation\" Figma Community file by JoyTaung.</string>
     <string name="about_footer">Open Source, MIT License</string>
 
     <!-- Clipboard -->
@@ -65,6 +66,7 @@
     <string name="server_status_error">Error: %1$s</string>
     <string name="server_action_start">Start</string>
     <string name="server_action_stop">Stop</string>
+    <string name="server_stop_shortcut">Stop server</string>
 
     <!-- Configuration -->
     <string name="configuration_title">Configuration</string>

@@ -4,7 +4,6 @@ package com.danielealbano.androidremotecontrolmcp.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,11 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,9 +27,13 @@ import androidx.compose.ui.unit.dp
 import com.danielealbano.androidremotecontrolmcp.R
 import com.danielealbano.androidremotecontrolmcp.data.model.ChannelConnectionStatus
 import com.danielealbano.androidremotecontrolmcp.data.model.ServerStatus
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassCard
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassTextButton
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassTone
+import com.danielealbano.androidremotecontrolmcp.ui.glass.StatusOrb
 import com.danielealbano.androidremotecontrolmcp.ui.theme.AndroidRemoteControlMcpTheme
 
-private const val STATUS_DOT_SIZE_DP = 12
+private const val STATUS_DOT_SIZE_DP = 16
 private const val ANIMATION_DURATION_MS = 300
 
 @Composable
@@ -49,12 +48,8 @@ fun ServerStatusCard(
     startEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-        ) {
+    GlassCard(modifier = modifier.fillMaxWidth()) {
+        Column {
             Text(
                 text = "Services Status",
                 style = MaterialTheme.typography.titleLarge,
@@ -70,6 +65,7 @@ fun ServerStatusCard(
                 buttonText = if (serverStatus is ServerStatus.Running) "Stop" else "Start",
                 buttonEnabled = mcpStartStopButtonEnabled(serverStatus, startEnabled),
                 onButtonClick = if (serverStatus is ServerStatus.Running) onMcpStopClick else onMcpStartClick,
+                isStart = serverStatus !is ServerStatus.Running,
             )
 
             Spacer(Modifier.height(8.dp))
@@ -82,6 +78,7 @@ fun ServerStatusCard(
                 buttonText = if (channelEnabled) "Stop" else "Start",
                 buttonEnabled = channelStartStopButtonEnabled(channelEnabled, startEnabled),
                 onButtonClick = if (channelEnabled) onChannelStopClick else onChannelStartClick,
+                isStart = !channelEnabled,
             )
         }
     }
@@ -118,6 +115,7 @@ private fun ServiceRow(
     buttonText: String,
     buttonEnabled: Boolean,
     onButtonClick: () -> Unit,
+    isStart: Boolean,
 ) {
     val animatedColor by animateColorAsState(
         targetValue = statusColor,
@@ -134,16 +132,14 @@ private fun ServiceRow(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f),
         ) {
-            Canvas(
+            StatusOrb(
+                color = animatedColor,
+                diameter = STATUS_DOT_SIZE_DP.dp,
                 modifier =
-                    Modifier
-                        .size(STATUS_DOT_SIZE_DP.dp)
-                        .semantics {
-                            contentDescription = "$label status: $statusText"
-                        },
-            ) {
-                drawCircle(color = animatedColor)
-            }
+                    Modifier.semantics {
+                        contentDescription = "$label status: $statusText"
+                    },
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
                 Text(
@@ -158,12 +154,12 @@ private fun ServiceRow(
             }
         }
 
-        FilledTonalButton(
+        GlassTextButton(
+            text = buttonText,
             onClick = onButtonClick,
             enabled = buttonEnabled,
-        ) {
-            Text(text = buttonText)
-        }
+            tone = if (isStart) GlassTone.Tinted else GlassTone.Clear,
+        )
     }
 }
 

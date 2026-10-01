@@ -2,6 +2,7 @@
 
 package com.danielealbano.androidremotecontrolmcp.ui.screens.settings
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassCard
 import com.danielealbano.androidremotecontrolmcp.ui.viewmodels.ChannelViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,13 +138,13 @@ fun WifiMonitorScreen(
                 )
             }
             item {
-                Card(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                GlassCard(
+                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                    contentPadding = PaddingValues(16.dp),
                 ) {
                     Text(
                         "WiFi scan events (discovered/lost) may be delayed up to 30 minutes in " +
                             "background due to Android scan throttling. Connection events are real-time.",
-                        modifier = Modifier.padding(16.dp),
                     )
                 }
             }

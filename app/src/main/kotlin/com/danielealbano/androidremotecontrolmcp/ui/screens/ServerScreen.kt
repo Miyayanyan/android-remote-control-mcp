@@ -6,6 +6,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -53,6 +55,7 @@ import com.danielealbano.androidremotecontrolmcp.ui.components.ConnectionInfoCar
 import com.danielealbano.androidremotecontrolmcp.ui.components.PrivacyModeCard
 import com.danielealbano.androidremotecontrolmcp.ui.components.ServerLogsSection
 import com.danielealbano.androidremotecontrolmcp.ui.components.ServerStatusCard
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassPolicy
 import com.danielealbano.androidremotecontrolmcp.ui.viewmodels.ChannelViewModel
 import com.danielealbano.androidremotecontrolmcp.ui.viewmodels.LogsViewModel
 import com.danielealbano.androidremotecontrolmcp.ui.viewmodels.MainViewModel
@@ -99,13 +102,7 @@ fun ServerScreen(
             title = { Text(stringResource(R.string.tab_server)) },
             windowInsets = WindowInsets(0),
         )
-        Column(
-            modifier =
-                Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
-        ) {
+        val callouts: @Composable () -> Unit = {
             if (!isAccessibilityEnabled) {
                 PermissionWarningCard(onClick = onNavigateToPermissions)
                 Spacer(Modifier.height(16.dp))
@@ -152,7 +149,8 @@ fun ServerScreen(
                 )
                 Spacer(Modifier.height(16.dp))
             }
-
+        }
+        val serviceCards: @Composable () -> Unit = {
             ServerStatusCard(
                 serverStatus = serverStatus,
                 channelStatus = channelStatus,
@@ -194,14 +192,19 @@ fun ServerScreen(
                     context.startActivity(Intent.createChooser(intent, null))
                 },
             )
-
-            Spacer(Modifier.height(16.dp))
-
+        }
+        val recentLogs: @Composable () -> Unit = {
             ServerLogsSection(
                 logs = recentServerLogs,
                 onShowMore = onShowAllLogs,
             )
         }
+        ServerScreenColumns(
+            callouts = callouts,
+            serviceCards = serviceCards,
+            recentLogs = recentLogs,
+            modifier = Modifier.weight(1f),
+        )
     }
 
     if (showChannelNotConfiguredDialog) {
@@ -215,6 +218,45 @@ fun ServerScreen(
                 }
             },
         )
+    }
+}
+
+/**
+ * Lays out the server screen's sections. Wide windows (e.g. the Thor's upper display) get two
+ * top-aligned columns: services on the left, alerts and logs on the right. Narrow windows, or
+ * enlarged system text, keep the single column in the original order.
+ */
+@Composable
+private fun ServerScreenColumns(
+    callouts: @Composable () -> Unit,
+    serviceCards: @Composable () -> Unit,
+    recentLogs: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BoxWithConstraints(modifier = modifier) {
+        val twoColumns = GlassPolicy.useTwoColumns(maxWidth.value, LocalDensity.current.fontScale)
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+        ) {
+            if (twoColumns) {
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Column(modifier = Modifier.weight(1f)) { serviceCards() }
+                    Column(modifier = Modifier.weight(1f)) {
+                        callouts()
+                        recentLogs()
+                    }
+                }
+            } else {
+                callouts()
+                serviceCards()
+                Spacer(Modifier.height(16.dp))
+                recentLogs()
+            }
+        }
     }
 }
 
