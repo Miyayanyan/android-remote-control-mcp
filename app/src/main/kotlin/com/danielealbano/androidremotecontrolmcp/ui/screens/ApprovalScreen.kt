@@ -3,9 +3,11 @@
 package com.danielealbano.androidremotecontrolmcp.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,19 +17,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Public
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -57,6 +56,10 @@ import com.danielealbano.androidremotecontrolmcp.geo.CountryDisplay
 import com.danielealbano.androidremotecontrolmcp.geo.GeoLocation
 import com.danielealbano.androidremotecontrolmcp.mcp.oauth.ClientIconUrl
 import com.danielealbano.androidremotecontrolmcp.mcp.oauth.PendingApproval
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassCard
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassTextButton
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassTone
+import com.danielealbano.androidremotecontrolmcp.ui.glass.GlassWell
 import com.danielealbano.androidremotecontrolmcp.ui.viewmodels.ApprovalViewModel
 import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
@@ -94,7 +97,10 @@ fun ApprovalScreen(
             )
         } else {
             val imageLoader = rememberLogoImageLoader()
-            LazyColumn(modifier = Modifier.weight(1f).padding(16.dp)) {
+            LazyColumn(
+                modifier = Modifier.weight(1f).padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 items(pending, key = { it.id }) { approval ->
                     ApprovalCard(
                         approval = approval,
@@ -142,15 +148,12 @@ private fun ApprovalCard(
 ) {
     val remaining = rememberSecondsRemaining(approval.expiresAtMs)
     val expired = remaining <= 0
-    val cardColors =
-        if (expired) {
-            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
-        } else {
-            CardDefaults.cardColors()
-        }
-    Card(modifier = Modifier.fillMaxWidth(), colors = cardColors) {
+    GlassCard(
+        modifier = Modifier.widthIn(max = CARD_MAX_WIDTH_DP.dp).fillMaxWidth().then(expiredOutline(expired)),
+        contentPadding = PaddingValues(24.dp),
+    ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(24.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             ClientIcon(approval = approval, imageLoader = imageLoader)
@@ -182,13 +185,31 @@ private fun ApprovalCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                OutlinedButton(onClick = onDeny) { Text(stringResource(R.string.approval_deny)) }
+                GlassTextButton(text = stringResource(R.string.approval_deny), onClick = onDeny)
                 Spacer(Modifier.width(12.dp))
-                Button(onClick = onApprove, enabled = !expired) { Text(stringResource(R.string.approval_approve)) }
+                GlassTextButton(
+                    text = stringResource(R.string.approval_approve),
+                    onClick = onApprove,
+                    enabled = !expired,
+                    tone = GlassTone.Tinted,
+                )
             }
         }
     }
 }
+
+/** An expired request keeps a clear error outline (its countdown also turns red and Approve is disabled). */
+@Composable
+private fun expiredOutline(expired: Boolean): Modifier =
+    if (expired) {
+        Modifier.border(
+            width = EXPIRED_OUTLINE_DP.dp,
+            color = MaterialTheme.colorScheme.error,
+            shape = RoundedCornerShape(CARD_CORNER_DP.dp),
+        )
+    } else {
+        Modifier
+    }
 
 /**
  * Circular client icon on a clean light disc (favicons are designed for light backgrounds). The SSRF-safe
@@ -230,29 +251,27 @@ private fun ClientIcon(
     }
 }
 
-/** Subtle pill showing the requesting host with a globe glyph. */
+/** Subtle inset pill showing the requesting host with a globe glyph. */
 @Composable
 private fun HostChip(host: String) {
-    Row(
-        modifier =
-            Modifier
-                .clip(RoundedCornerShape(CHIP_CORNER_DP.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(horizontal = 12.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Public,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(16.dp),
-        )
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text = host,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+    GlassWell(cornerRadius = CHIP_CORNER_DP.dp) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Public,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp),
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = host,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
@@ -281,22 +300,16 @@ private fun ClientOriginRow(
     }
 }
 
-/** Prominent match-code display in a tonal container. */
+/** Prominent match-code display in a soft inset well (no glass on glass). */
 @Composable
 private fun MatchCodePill(code: String) {
-    Box(
-        modifier =
-            Modifier
-                .clip(RoundedCornerShape(PILL_CORNER_DP.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(horizontal = 32.dp, vertical = 12.dp),
-        contentAlignment = Alignment.Center,
-    ) {
+    GlassWell(cornerRadius = PILL_CORNER_DP.dp) {
         Text(
             text = code,
             style = MaterialTheme.typography.displayMedium,
             fontFamily = FontFamily.Monospace,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(horizontal = 32.dp, vertical = 12.dp),
         )
     }
 }
@@ -342,6 +355,9 @@ private const val ICON_SIZE_DP = 72
 private const val ICON_INSET_DP = 10
 private const val CHIP_CORNER_DP = 50
 private const val PILL_CORNER_DP = 20
+private const val CARD_CORNER_DP = 26
+private const val CARD_MAX_WIDTH_DP = 560
+private const val EXPIRED_OUTLINE_DP = 2
 private const val MILLIS_PER_SECOND = 1000L
 private const val SECONDS_PER_MINUTE = 60L
 private const val ICON_INITIALS_ARGB = 0xFF5B5B66
